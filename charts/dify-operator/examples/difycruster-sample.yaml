@@ -1,0 +1,93 @@
+apiVersion: dify.ai/v1alpha1
+kind: DifyCluster
+metadata:
+  name: dify-sample
+  namespace: dify-system
+spec:
+  difyVersion: "1.7.1"
+  components:
+    api:
+      enabled: true
+      replicas: 2
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 10
+        targetCPUUtilization: 70
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "2000m"
+          memory: "4Gi"
+    worker:
+      enabled: true
+      replicas: 3
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 20
+        targetCPUUtilization: 60
+      resources:
+        requests:
+          cpu: "300m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+    web:
+      enabled: true
+      replicas: 2
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+    sandbox:
+      enabled: true
+      replicas: 1
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        targetCPUUtilization: 80
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+    pluginDaemon:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+  storage:
+    type: "local"
+  database:
+    postgresql:
+      enabled: true
+      host: "dify-postgresql"
+      database: "dify"
+      username: "postgres"
+      password: "dify123456"
+    redis:
+      enabled: true
+      host: "dify-redis"
+      password: "dify123456"
+  networking:
+    service:
+      type: "ClusterIP"
+    ingress:
+      enabled: false
+      host: "dify.example.com"
+      tls: false

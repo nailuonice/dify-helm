@@ -1,0 +1,92 @@
+apiVersion: dify.ai/v1alpha1
+kind: DifyCluster
+metadata:
+  name: dify-dev
+  namespace: dify-dev
+spec:
+  difyVersion: "1.7.1"
+  
+  components:
+    # API 组件 - 开发环境最小配置
+    api:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+    
+    # Worker 组件 - 开发环境最小配置
+    worker:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+    
+    # Web 组件 - 开发环境
+    web:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+    
+    # Sandbox 组件 - 开发环境
+    sandbox:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+    
+    # Plugin Daemon - 开发环境
+    pluginDaemon:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+  
+  # 存储配置 - 本地存储
+  storage:
+    type: "local"
+  
+  # 数据库配置 - 内置数据库
+  database:
+    postgresql:
+      enabled: true
+      host: "dify-dev-postgresql"
+      database: "dify"
+      username: "postgres"
+      password: "dev123456"
+    redis:
+      enabled: true
+      host: "dify-dev-redis"
+      password: "dev123456"
+  
+  # 网络配置 - 开发环境简单配置
+  networking:
+    service:
+      type: "ClusterIP"
+    ingress:
+      enabled: false

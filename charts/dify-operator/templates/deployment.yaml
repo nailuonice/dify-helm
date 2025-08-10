@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dify-operator.fullname" . }}-controller-manager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dify-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+spec:
+  replicas: {{ .Values.operator.replicas }}
+  selector:
+    matchLabels:
+      {{- include "dify-operator.selectorLabels" . | nindent 6 }}
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        {{- include "dify-operator.selectorLabels" . | nindent 8 }}
+        control-plane: controller-manager
+    spec:
+      serviceAccountName: {{ include "dify-operator.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+      containers:
+      - name: manager
+        image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
+        imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+        command:
+        - /manager
+        args:
+        - --leader-elect
+        - --metrics-bind-address={{ .Values.operator.config.metricsAddr }}
+        - --health-probe-bind-address={{ .Values.operator.config.probeAddr }}
+        env:
+        - name: DIFY_DEFAULT_API_IMAGE
+          value: "{{ .Values.operator.config.defaultImages.api }}"
+        - name: DIFY_DEFAULT_WEB_IMAGE
+          value: "{{ .Values.operator.config.defaultImages.web }}"
+        - name: DIFY_DEFAULT_WORKER_IMAGE
+          value: "{{ .Values.operator.config.defaultImages.worker }}"
+        - name: DIFY_DEFAULT_SANDBOX_IMAGE
+          value: "{{ .Values.operator.config.defaultImages.sandbox }}"
+        - name: DIFY_DEFAULT_PLUGIN_DAEMON_IMAGE
+          value: "{{ .Values.operator.config.defaultImages.pluginDaemon }}"
+        ports:
+        - containerPort: 8080
+          name: metrics
+          protocol: TCP
+        - containerPort: 8081
+          name: health
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          {{- toYaml .Values.operator.resources | nindent 10 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - "ALL"
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.operator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

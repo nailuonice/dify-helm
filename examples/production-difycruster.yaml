@@ -1,0 +1,121 @@
+apiVersion: dify.ai/v1alpha1
+kind: DifyCluster
+metadata:
+  name: dify-prod
+  namespace: dify-system
+spec:
+  difyVersion: "1.7.1"
+  
+  components:
+    # API 组件 - 核心业务逻辑
+    api:
+      enabled: true
+      replicas: 3
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 20
+        targetCPUUtilization: 70
+        targetMemoryUtilization: 80
+      resources:
+        requests:
+          cpu: "1000m"
+          memory: "2Gi"
+        limits:
+          cpu: "4000m"
+          memory: "8Gi"
+    
+    # Worker 组件 - 异步任务处理
+    worker:
+      enabled: true
+      replicas: 5
+      autoscaling:
+        enabled: true
+        minReplicas: 3
+        maxReplicas: 50
+        targetCPUUtilization: 60
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "2000m"
+          memory: "4Gi"
+    
+    # Web 组件 - 前端界面
+    web:
+      enabled: true
+      replicas: 2
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 10
+        targetCPUUtilization: 80
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+    
+    # Sandbox 组件 - 代码执行环境
+    sandbox:
+      enabled: true
+      replicas: 2
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 10
+        targetCPUUtilization: 80
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "2000m"
+          memory: "4Gi"
+    
+    # Plugin Daemon - 插件管理
+    pluginDaemon:
+      enabled: true
+      replicas: 2  # 生产环境建议至少2个副本
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+  
+  # 存储配置 - 使用 S3
+  storage:
+    type: "s3"
+    s3:
+      endpoint: "https://s3.amazonaws.com"
+      bucket: "dify-prod-storage"
+      accessKey: "your-access-key"
+      secretKey: "your-secret-key"
+      region: "us-east-1"
+  
+  # 数据库配置 - 外部托管数据库
+  database:
+    postgresql:
+      enabled: true
+      host: "dify-prod-postgres.xxxxx.us-east-1.rds.amazonaws.com"
+      database: "dify"
+      username: "dify"
+      password: "your-secure-database-password"
+    redis:
+      enabled: true
+      host: "dify-prod-redis.xxxxx.cache.amazonaws.com"
+      password: "your-secure-redis-password"
+  
+  # 网络配置 - 生产环境网络设置
+  networking:
+    service:
+      type: "LoadBalancer"
+    ingress:
+      enabled: true
+      host: "dify.yourcompany.com"
+      tls: true

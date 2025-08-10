@@ -1,0 +1,102 @@
+# Default values for dify-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Operator配置
+operator:
+  image:
+    repository: langgenius/dify-operator
+    tag: "v0.1.0"
+    pullPolicy: IfNotPresent
+  
+  replicas: 1
+  
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  
+  # Operator配置
+  config:
+    logLevel: "info"
+    metricsAddr: ":8080"
+    probeAddr: ":8081"
+    leaderElect: true
+    
+    # 默认镜像配置
+    defaultImages:
+      api: "langgenius/dify-api:1.7.1"
+      web: "langgenius/dify-web:1.7.1"
+      worker: "langgenius/dify-api:1.7.1"
+      sandbox: "langgenius/dify-sandbox:0.2.12"
+      pluginDaemon: "langgenius/dify-plugin-daemon:0.2.0-local"
+
+# RBAC配置
+rbac:
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "dify-operator"
+
+# 监控配置
+monitoring:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    labels: {}
+    annotations: {}
+
+# 示例DifyCluster配置
+examples:
+  enabled: true
+  difyCluster:
+    name: "dify-sample"
+    namespace: "dify-system"
+    difyVersion: "1.7.1"
+    components:
+      api:
+        enabled: true
+        replicas: 2
+        autoscaling:
+          enabled: true
+          minReplicas: 1
+          maxReplicas: 10
+          targetCPUUtilization: 70
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+      worker:
+        enabled: true
+        replicas: 3
+        autoscaling:
+          enabled: true
+          minReplicas: 2
+          maxReplicas: 20
+          targetCPUUtilization: 60
+      web:
+        enabled: true
+        replicas: 2
+      sandbox:
+        enabled: true
+        replicas: 1
+      pluginDaemon:
+        enabled: true
+        replicas: 1

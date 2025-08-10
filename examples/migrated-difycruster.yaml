@@ -1,0 +1,77 @@
+apiVersion: dify.ai/v1alpha1
+kind: DifyCluster
+metadata:
+  name: dify-cluster
+  namespace: dify-system
+spec:
+  components:
+    api:
+      autoscaling: null
+      enabled: true
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    pluginDaemon:
+      enabled: true
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    sandbox:
+      autoscaling: null
+      enabled: true
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    web:
+      enabled: true
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    worker:
+      autoscaling: null
+      enabled: true
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+  database:
+    postgresql:
+      database: dify
+      enabled: true
+      host: dify-postgresql
+      password: dify123456
+      username: postgres
+    redis:
+      enabled: true
+      host: redis.example
+      password: difyai123456
+  difyVersion: 1.7.1
+  networking:
+    service:
+      type: ClusterIP
+  storage:
+    type: local
