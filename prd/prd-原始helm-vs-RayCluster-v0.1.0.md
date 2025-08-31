@@ -1,17 +1,3 @@
-你好，大帅比
-
-基于您对Ray架构的深入理解，让我详细分析dify-helm项目的实现机制，并回答您的疑惑。
-Ran tool
-Ran tool
-Ran tool
-Ran tool
-Ran tool
-Ran tool
-现在让我查看worker和sandbox的配置部分：
-Ran tool
-Ran tool
-基于您的疑惑和我对dify-helm项目的深入分析，现在我来为您详细解答这些问题，并创建一个全面的PRD文档。
-
 # Dify-Helm vs KubeRay：架构差异和实现机制对比分析PRD v1.0.0
 
 ## 1. 项目背景
